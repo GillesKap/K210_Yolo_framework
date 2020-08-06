@@ -1,4 +1,4 @@
-from tensorflow.python import keras
+from tensorflow import keras
 from tensorflow.python.ops import init_ops
 from tensorflow.python.ops import math_ops
 from tensorflow.python.keras.utils.generic_utils import to_list
