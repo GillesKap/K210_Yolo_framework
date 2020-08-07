@@ -9,12 +9,12 @@ import argparse
 import sys
 import numpy as np
 
-tf.enable_eager_execution()
-config = tf.ConfigProto()
-config.gpu_options.allow_growth = True
-sess = tf.Session(config=config)
-keras.backend.set_session(sess)
-keras.backend.set_learning_phase(0)
+# tf.enable_eager_execution()
+# config = tf.ConfigProto()
+# config.gpu_options.allow_growth = True
+# sess = tf.Session(config=config)
+# keras.backend.set_session(sess)
+# keras.backend.set_learning_phase(0)
 
 
 # obj_thresh = 0.7

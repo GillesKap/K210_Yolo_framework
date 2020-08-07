@@ -132,8 +132,8 @@ def build_kmeans_graph(new_x: np.ndarray, new_c: np.ndarray):
     in_c : c placeholder
     out_idx : output idx tensor, shape [?,]
     """
-    in_x = tf.placeholder(tf.float64, shape=np.shape(new_x), name='in_x')
-    in_c = tf.placeholder(tf.float64, shape=np.shape(new_c), name='in_c')
+    in_x = tf.compat.v1.placeholder(tf.float64, shape=np.shape(new_x), name='in_x')
+    in_c = tf.compat.v1.placeholder(tf.float64, shape=np.shape(new_c), name='in_c')
     out_idx = findClosestCentroids(in_x, in_c)
 
     return in_x, in_c, out_idx
@@ -158,9 +158,9 @@ def runkMeans(X: np.ndarray, initial_centroids: np.ndarray, max_iters: int,
     in_x, in_c, idx = build_kmeans_graph(new_x, new_c)
 
     """ run kmeans """
-    config = tf.ConfigProto()
+    config = tf.compat.v1.ConfigProto()
     config.gpu_options.allow_growth = True
-    sess = tf.Session(config=config)
+    sess = tf.compat.v1.Session(config=config)
 
     for i in range(max_iters):
         idx_ = sess.run(idx, feed_dict={in_x: new_x, in_c: new_c})
@@ -180,6 +180,9 @@ def runkMeans(X: np.ndarray, initial_centroids: np.ndarray, max_iters: int,
 def main(train_set: str, max_iters: int, in_hw: tuple, out_hw: tuple,
          anchor_num: int, is_random: bool, is_plot: bool, low: list, high: list):
     X = np.load(f'data/{train_set}_img_ann.npy', allow_pickle=True)
+    # disable eager execution (make it compatible with tf 1.14)
+    tf.compat.v1.disable_eager_execution()
+
     in_wh = np.array(in_hw[::-1])
     low = np.array(low)
     high = np.array(high)

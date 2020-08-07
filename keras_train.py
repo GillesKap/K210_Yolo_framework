@@ -1,5 +1,6 @@
 import tensorflow as tf
-from tensorflow.contrib.data import assert_element_shape
+# from tensorflow.contrib.data import assert_element_shape
+
 from tensorflow.python import keras
 from tensorflow.python.keras.callbacks import TensorBoard, LearningRateScheduler
 from tools.utils import Helper, create_loss_fn, INFO, ERROR, NOTE
@@ -14,10 +15,10 @@ import argparse
 from termcolor import colored
 from tensorflow_model_optimization.python.core.api.sparsity import keras as sparsity
 
-config = tf.ConfigProto()
-config.gpu_options.allow_growth = True
-sess = tf.Session(config=config)
-keras.backend.set_session(sess)
+# config = tf.ConfigProto()
+# config.gpu_options.allow_growth = True
+# sess = tf.Session(config=config)
+# keras.backend.set_session(sess)
 
 
 def write_arguments_to_file(args, filename):
@@ -32,6 +33,9 @@ def main(args, train_set, class_num, pre_ckpt, model_def,
          learning_rate_decay_factor, obj_weight, noobj_weight,
          wh_weight, obj_thresh, iou_thresh, vaildation_split, log_dir,
          is_prune, initial_sparsity, final_sparsity, end_epoch, frequency):
+
+    #disable eager execution
+    tf.compat.v1.disable_eager_execution()
     # Build path
     log_dir = (Path(log_dir) / datetime.strftime(datetime.now(), '%Y%m%d-%H%M%S'))  # type: Path
     ckpt_weights = log_dir / 'yolo_weights.h5'
@@ -40,7 +44,7 @@ def main(args, train_set, class_num, pre_ckpt, model_def,
         log_dir.mkdir(parents=True)
     write_arguments_to_file(args, str(log_dir / 'args.txt'))
 
-    # Build utils
+    # # Build utils
     h = Helper(f'data/{train_set}_img_ann.npy', class_num, f'data/{train_set}_anchor.npy',
                np.reshape(np.array(image_size), (-1, 2)), np.reshape(np.array(output_size), (-1, 2)), vaildation_split)
     h.set_dataset(batch_size, rand_seed, is_training=(is_augmenter == 'True'))
@@ -80,8 +84,10 @@ def main(args, train_set, class_num, pre_ckpt, model_def,
 
     """ NOTE fix the dataset output shape """
     shapes = (train_model.input.shape, tuple(h.output_shapes))
-    h.train_dataset = h.train_dataset.apply(assert_element_shape(shapes))
-    h.test_dataset = h.test_dataset.apply(assert_element_shape(shapes))
+    print(shapes)
+    print(h.train_dataset)
+    h.train_dataset = h.train_dataset.apply(tf.compat.v1.assert_element_shape(shapes))
+    h.test_dataset = h.test_dataset.apply(tf.compat.v1.assert_element_shape(shapes))
 
     """ Callbacks """
     if is_prune == 'True':
