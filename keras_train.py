@@ -84,10 +84,10 @@ def main(args, train_set, class_num, pre_ckpt, model_def,
 
     """ NOTE fix the dataset output shape """
     shapes = (train_model.input.shape, tuple(h.output_shapes))
-    print(shapes)
-    print(h.train_dataset)
-    h.train_dataset = h.train_dataset.apply(tf.compat.v1.assert_element_shape(shapes))
-    h.test_dataset = h.test_dataset.apply(tf.compat.v1.assert_element_shape(shapes))
+    # TODO: find alternative method for fixing the dataset output shape (.map()? .apply() with a different
+    #  transformation function?)
+    # h.train_dataset = h.train_dataset.apply(tf.compat.v1.assert_element_shape(shapes))
+    # h.test_dataset = h.test_dataset.apply(tf.compat.v1.assert_element_shape(shapes))
 
     """ Callbacks """
     if is_prune == 'True':

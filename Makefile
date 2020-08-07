@@ -57,7 +57,34 @@ train:
 			--prune_initial_sparsity ${INITSPARSITY} \
 			--prune_final_sparsity ${FINALSPARSITY} \
 			--prune_end_epoch ${END_EPOCH} \
-			--prune_frequency ${FREQUENCY} 
+			--prune_frequency ${FREQUENCY}
+pretrained:
+	python3 ./keras_from_pretrained_model.py \
+			--train_set ${DATASET} \
+			--class_num ${CLSNUM} \
+			--pre_ckpt ${CKPT} \
+			--model_def ${MODEL} \
+			--depth_multiplier ${DEPTHMUL} \
+			--augmenter ${IAA} \
+			--image_size ${IMGSIZE} \
+			--output_size ${OUTSIZE} \
+			--batch_size ${BATCH} \
+			--rand_seed 3 \
+			--max_nrof_epochs ${MAXEP} \
+			--init_learning_rate ${ILR} \
+			--learning_rate_decay_factor ${LRDECAYFACTOR} \
+			--obj_weight ${OBJWEIGHT} \
+			--noobj_weight ${NOOBJWEIGHT} \
+			--wh_weight ${WHWEIGHT} \
+			--obj_thresh ${OBJTHRESH} \
+			--iou_thresh ${IOUTHRESH} \
+			--vaildation_split ${SPLITFACTOR} \
+			--log_dir log \
+			--is_prune ${PRUNE} \
+			--prune_initial_sparsity ${INITSPARSITY} \
+			--prune_final_sparsity ${FINALSPARSITY} \
+			--prune_end_epoch ${END_EPOCH} \
+			--prune_frequency ${FREQUENCY}
 
 freeze:
 	python3 ./keras_freeze.py ${CKPT}
