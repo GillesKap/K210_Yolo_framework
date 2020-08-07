@@ -17,7 +17,7 @@ ERROR = colored('[ ERROR ]', 'red')
 NOTE = colored('[ NOTE ]', 'green')
 
 
-def restore_from_pkl(sess: tf.Session, varlist: list, pklfile: str):
+def restore_from_pkl(sess: tf.compat.v1.Session, varlist: list, pklfile: str):
     with open(pklfile, 'rb') as f:
         tensordict = pickle.load(f)
     l = len(tensordict.keys())
@@ -33,11 +33,11 @@ def restore_from_pkl(sess: tf.Session, varlist: list, pklfile: str):
         sess.run(assgin_list[i])
 
 
-def restore_ckpt(sess: tf.Session, depth_multiplier: float, var_list: list, ckptdir: str):
+def restore_ckpt(sess: tf.compat.v1.Session, depth_multiplier: float, var_list: list, ckptdir: str):
     if ckptdir == '' or ckptdir == None:
         pass
     elif 'pkl' in ckptdir:
-        restore_from_pkl(sess, tf.global_variables(), ckptdir)
+        restore_from_pkl(sess, tf.compat.v1.global_variables(), ckptdir)
     else:
         ckpt = tf.train.get_checkpoint_state(ckptdir)
         loader = tf.train.Saver(var_list=var_list)
@@ -435,11 +435,13 @@ class Helper(object):
                     # NOTE use copy avoid change the annotaion value !
                     yield img_path, np.copy(true_box)
 
-        dataset = (tf.data.Dataset.from_generator(gen, (tf.framework_ops.dtypes.string, tf.float32), ([], [None, 5])).
+        output_types = (tf.string, tf.float32)
+        # output_types =  (tf.compat.v1.framework_ops.dtypes.string, tf.float32)
+
+        dataset = (tf.data.Dataset.from_generator(generator=gen, output_types=output_types, output_shapes=((), (None, 5))).
                    shuffle(batch_size * 500 if is_training == True else batch_size * 50, rand_seed).repeat().
                    map(_parser_wrapper, tf.data.experimental.AUTOTUNE).
                    batch(batch_size, True).prefetch(tf.data.experimental.AUTOTUNE))
-
         return dataset
 
     def set_dataset(self, batch_size, rand_seed, is_training=True, is_resize=True):
@@ -568,7 +570,7 @@ def tf_xywh_to_grid(all_true_xy: tf.Tensor, all_true_wh: tf.Tensor, layer: int, 
     """
     with tf.name_scope('xywh_to_grid_%d' % layer):
         grid_true_xy = (all_true_xy * h.out_hw[layer][::-1]) - h.xy_offset[layer]
-        grid_true_wh = tf.log(all_true_wh / h.anchors[layer])
+        grid_true_wh = tf.compat.v1.log(all_true_wh / h.anchors[layer])
     return grid_true_xy, grid_true_wh
 
 

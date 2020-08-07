@@ -1,6 +1,6 @@
 import tensorflow as tf
-from tensorflow.contrib import slim
-from models.mobilenet_v2 import training_scope, mobilenet_base
+# from tensorflow.contrib import slim
+# from models.mobilenet_v2 import training_scope, mobilenet_base
 from tensorflow.python import keras
 import tensorflow.keras.backend as K
 from tensorflow.keras.layers import *
